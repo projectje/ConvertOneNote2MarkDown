@@ -131,11 +131,11 @@ function Get-OneNoteEnrichPageCollection {
 
             # 3 Add path to indicate the path
             $path = ""
-            if ($page.pageLevel -eq 3) {
+            if ($pageObject.PageLevel -eq 3) {
                 $path = Join-Path -Path $Dir -ChildPath $SubDir
             }
-            elseif ($page.pageLevel -eq 2) {
-                if ($page.HasChildren) {
+            elseif ($pageObject.PageLevel -eq 2) {
+                if ($pageObject.HasChildren) {
                     $SubDir = $pageObject.Name
                     $path = Join-Path -Path $Dir -ChildPath $SubDir
                 }
@@ -143,8 +143,8 @@ function Get-OneNoteEnrichPageCollection {
                     $path = $Dir
                 }
             }
-            elseif ($page.pageLevel -eq 1) {
-                if ($page.HasChildren) {
+            elseif ($pageObject.PageLevel -eq 1) {
+                if ($pageObject.HasChildren) {
                     $Dir = $pageObject.Name
                     $path = $Dir
                 }
@@ -166,7 +166,7 @@ function Get-OneNoteEnrichPageCollection {
                 $postfix = 0
                 $testName = $fullName
                 while ($namesArray.Contains($testName)) {
-                    $testName = $fullName + "-" + ($postfix + 1)
+                    $testName = $fullName + "-" + ($postfix++)
                 }
                 $fullName = $testName
             }

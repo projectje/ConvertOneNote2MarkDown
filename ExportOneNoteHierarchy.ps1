@@ -12,4 +12,4 @@
 
 Export-OneNoteHierarchy -Config (Get-Config -path "$PSScriptRoot\Export\Config\export.cfg")
 
-# TODO 1: a specific section 
+# TODO 1: https://github.com/PowerShell/vscode-powershell/issues/1856

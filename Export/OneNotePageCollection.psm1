@@ -15,8 +15,44 @@ function Export-OneNotePageCollection {
         [array]$pages = Get-OneNoteEnrichPageCollection -PageCollection $PageCollection
         foreach ($page in $pages) {
             $paths = Get-OneNotePagePublishPaths -Config $Config -Path $Path -Page $page
-            Write-Host "Exporting Page: " $page.Path $page.Name $page $paths $page.Id -BackgroundColor Green
-            Invoke-OneNotePublish -ID ($page.Id) -Path $paths.docx -PublishFormat 'pfWord' -Overwrite $true
+
+            if ($Config.PublishFormat -eq 'docx') {
+                Write-Host "Exporting Page: " $paths.docx -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.docx -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'doc') {
+                Write-Host "Exporting Page: " $page.doc -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.one -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'one') {
+                Write-Host "Exporting Page: " $paths.one -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.one -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'onepkg') {
+                Write-Host "Exporting Page: " $paths.onepkg -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.onepkg -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'mht') {
+                Write-Host "Exporting Page: " $paths.mht -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.mht -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'pdf') {
+                Write-Host "Exporting Page: " $paths.pdf -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.pdf -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'xps') {
+                Write-Host "Exporting Page: " $paths.xps -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.xps -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'emf') {
+                Write-Host "Exporting Page: " $paths.emf -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.emf -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+            if ($Config.PublishFormat -eq 'htm') {
+                Write-Host "Exporting Page: " $paths.htm -BackgroundColor Green
+                Invoke-OneNotePublish -ID ($page.Id) -Path $paths.htm -PublishFormat 'pfWord' -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+            }
+
         }
     }
     catch {
