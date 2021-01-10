@@ -17,6 +17,6 @@ Forked from: https://github.com/SjoerdV/ConvertOneNote2MarkDown and some input f
    - htm (HTML files, with attachments in same location )
 
 - Specify the folder you would like to export to
-- Specify if your want to overwrite the file or not if existing
+- Specify if you want to overwrite the file or not if existing
 
-Run the script
+Run the script "ExportOneNoteHierarchy.ps1"
