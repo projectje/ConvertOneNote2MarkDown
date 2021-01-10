@@ -7,5 +7,11 @@ function Get-OneNoteSectionCollectionSection {
         [System.Array]$SectionCollection,
         [string]$ID
     )
-    return $SectionCollection | Where-Object { $_.ID -eq $ID }
+    try {
+        return $SectionCollection | Where-Object { $_.ID -eq $ID }
+    }
+    catch {
+        Write-Host $global:error -ForegroundColor Red
+        Exit
+    }
 }

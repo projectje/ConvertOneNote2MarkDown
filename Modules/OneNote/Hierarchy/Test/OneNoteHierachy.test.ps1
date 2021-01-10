@@ -1,4 +1,4 @@
-Import-Module "$PSScriptRoot\OneNoteHierarchy.psm1" -Force
+Import-Module "$PSScriptRoot\..\OneNoteHierarchy.psm1" -Force
 
 #################################################################################
 # Get-OneNoteHierarchy

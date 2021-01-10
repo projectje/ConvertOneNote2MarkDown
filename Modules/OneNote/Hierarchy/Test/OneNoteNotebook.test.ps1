@@ -1,6 +1,6 @@
-Import-Module "$PSScriptRoot\OneNoteHierarchy.psm1" -Force
-Import-Module "$PSScriptRoot\OneNoteNotebookCollection.psm1" -Force
-Import-Module "$PSScriptRoot\OneNoteNotebook.psm1" -Force
+Import-Module "$PSScriptRoot\..\OneNoteHierarchy.psm1" -Force
+Import-Module "$PSScriptRoot\..\OneNoteNotebookCollection.psm1" -Force
+Import-Module "$PSScriptRoot\..\OneNoteNotebook.psm1" -Force
 
 ######################################################################################
 # Setup (tested in other tests)

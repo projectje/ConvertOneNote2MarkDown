@@ -1,4 +1,7 @@
-
+<#
+    .SYNOPSIS
+        Helper functions for file operations
+#>
 function Remove-InvalidFileNameChars {
     <#
         .SYNOPSIS
@@ -28,9 +31,15 @@ function Remove-InvalidFileNameCharsInsertedFiles {
         [string]$SpecialChars = "#$%^*[]'<>!@{};"
 
     )
-    $rePattern = ($SpecialChars.ToCharArray() |ForEach-Object { [regex]::Escape($_) }) -join "|"
-    $newName = $Name.Split([IO.Path]::GetInvalidFileNameChars()) -join '-'
-    return ($newName -replace $rePattern, "" -replace "\s", "-")
+    try {
+        $rePattern = ($SpecialChars.ToCharArray() |ForEach-Object { [regex]::Escape($_) }) -join "|"
+        $newName = $Name.Split([IO.Path]::GetInvalidFileNameChars()) -join '-'
+        return ($newName -replace $rePattern, "" -replace "\s", "-")
+    }
+    catch {
+        Write-Host $Error -ForegroundColor Red
+        Exit
+    }
 }
 
 function New-Dir {
@@ -41,7 +50,13 @@ function New-Dir {
     param(
         [string]$Path
     )
-    New-Item -ItemType Directory -Force -Path $Path | Out-Null
+    try {
+        New-Item -ItemType Directory -Force -Path $Path | Out-Null
+    }
+    catch {
+        Write-Host $Error -ForegroundColor Red
+        Exit
+    }
 }
 
 function Remove-File {
@@ -69,5 +84,5 @@ function ReplaceStringInFile {
         [string]$StringToBeReplaced = "",
         [string]$StringThatWillReplaceIt = ""
     )
-    ((Get-Content -LiteralPath $File -Raw -encoding utf8).Replace($StringToBeReplaced, '')) | Set-Content -LiteralPath $File
+    ((Get-Content -Path $File -Raw -encoding utf8).Replace($StringToBeReplaced, '')) | Set-Content -Path $File
 }

@@ -1,5 +1,3 @@
-Import-Module "$PSScriptRoot\FileOperations.psm1" -Force
-<#
 <#
     .SYNOPSIS
         Operations on Individual Section
@@ -12,7 +10,13 @@ function Get-OneNoteSectionPageCollection {
     param(
         [System.Xml.XmlElement]$Section
     )
-    return $Section.Page
+    try {
+        return $Section.Page
+    }
+    catch {
+        Write-Host $global:error -ForegroundColor Red
+        Exit
+    }
 }
 
 function Get-OneNoteSectionPageCount {
@@ -22,16 +26,11 @@ function Get-OneNoteSectionPageCount {
     param(
         [System.Xml.XmlElement]$Section
     )
-    return $Section.Page.Count
-}
-
-function Get-OneNoteSectionName {
-    <#
-        .SYNOPSIS
-            Returns the section name stripped off invalid chars
-    #>
-    param(
-        [System.Xml.XmlElement]$Section
-    )
-    return $Section.Name | Remove-InvalidFileNameChars
+    try {
+        return $Section.Page.Count
+    }
+    catch {
+        Write-Host $global:error -ForegroundColor Red
+        Exit
+    }
 }

@@ -12,7 +12,13 @@ function Get-OneNoteSectionGroupCollectionSectionGroupCollection {
     param(
         [System.Array]$SectionGroupCollection
     )
-    return $SectionGroupCollection | Where-Object {$null -ne $_.SectionGroup}
+    try {
+        return $SectionGroupCollection | Where-Object {$null -ne $_.SectionGroup}
+    }
+    catch {
+        Write-Host $global:error -ForegroundColor Red
+        Exit
+    }
 }
 
 function Get-OneNoteSectionGroupCollectionSectionCollection {
@@ -23,5 +29,12 @@ function Get-OneNoteSectionGroupCollectionSectionCollection {
     param(
         [System.Array]$SectionGroupCollection
     )
-    return $SectionGroupCollection |Where-Object {$null -ne $_.Section}
+    try {
+        return $SectionGroupCollection |Where-Object {$null -ne $_.Section}
+    }
+    catch
+    {
+        Write-Host $global:error -ForegroundColor Red
+        Exit
+    }
 }
