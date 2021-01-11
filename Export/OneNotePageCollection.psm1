@@ -23,9 +23,6 @@ function Export-OneNotePageCollection {
                 $publishPage = Get-EnrichedPagePublishPaths -Page $publishPage -ExportFormat $_ -Config $Config -RelativePath $RelativePath
             }
 
-            $Config
-            $publishPage
-
             # handle onenote publishing
             $Config.ExportFormat -split ',' -replace '^\s+|\s+$' | ForEach-Object {
                 if ($publishformats -contains $_) {

@@ -72,7 +72,7 @@ function Invoke-OneNotePublish {
             $fileExists = $false
         }
         if ($fileExists -eq $false) {
-            Write-Host "Publishing Page: " $ID $Path $PublishFormat -ForegroundColor Green
+            Write-Host "Publishing Page: " $Path -ForegroundColor Green
             $OneNotePage.Publish($ID, $Path, $PublishFormat, "")
         }
         else {
