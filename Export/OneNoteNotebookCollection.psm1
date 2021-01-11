@@ -19,7 +19,6 @@ function Export-OneNoteNotebookCollection {
             Write-Host "Exporting Notebook $($item+1) out of $count" -ForegroundColor Green
             $notebook = Get-OneNoteNotebook -NotebookCollection $NotebookCollection -NotebookItem $item
             Write-Host "Exporting Notebook:" -ForegroundColor Green
-            $notebook
             Export-OneNoteNoteBook -Notebook $notebook -Config $Config
         }
         Write-Host "*DONE*" -ForegroundColor Green

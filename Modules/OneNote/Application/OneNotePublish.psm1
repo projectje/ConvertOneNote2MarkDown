@@ -23,8 +23,47 @@ function Invoke-OneNotePublish {
         [string] $PublishFormat = 'pfWord', # [in,defaultvalue(pfOneNote)]PublishFormat pfPublishFormat,
         [bool] $Overwrite = $true
     )
-    try {
 
+    if ($PublishFormat -eq 'docx')
+    {
+        $PublishFormat = 'pfWord'
+    }
+    elseif ($PublishFormat -eq 'doc')
+    {
+        $PublishFormat = 'pfWord'
+    }
+    elseif ($PublishFormat -eq 'one') {
+        $PublishFormat = 'pfOneNote'
+    }
+    elseif ($PublishFormat -eq 'onenote') {
+        $PublishFormat = 'pfOneNote'
+    }
+    elseif ($PublishFormat -eq 'onepkg') {
+        $PublishFormat = 'pfOneNotePackage'
+    }
+    elseif ($PublishFormat -eq 'mht') {
+        $PublishFormat = 'pfMHTML'
+    }
+    elseif ($PublishFormat -eq 'mhtml') {
+        $PublishFormat = 'pfMHTML'
+    }
+    elseif ($PublishFormat -eq 'pdf') {
+        $PublishFormat = 'pfPDF'
+    }
+    elseif ($PublishFormat -eq 'xps') {
+        $PublishFormat = 'pfXPS'
+    }
+    elseif ($PublishFormat -eq 'emf') {
+        $PublishFormat = 'pfEMF'
+    }
+    elseif ($PublishFormat -eq 'htm') {
+        $PublishFormat = 'pfHTML'
+    }
+    elseif ($PublishFormat -eq 'html') {
+        $PublishFormat = 'pfHTML'
+    }
+
+    try {
         $OneNotePage = New-Object -ComObject OneNote.Application
         # $OneNotePage | getMember
         [bool] $fileExists = [System.IO.File]::Exists($Path)
@@ -33,7 +72,11 @@ function Invoke-OneNotePublish {
             $fileExists = $false
         }
         if ($fileExists -eq $false) {
+            Write-Host "Publishing Page: " $Path -ForegroundColor Green
             $OneNotePage.Publish($ID, $Path, $PublishFormat, "")
+        }
+        else {
+            Write-Host "Skipping Page: " $Path -ForegroundColor Yellow
         }
         [System.Runtime.Interopservices.Marshal]::ReleaseComObject($OneNotePage) | Out-Null
         Remove-Variable OneNotePage
@@ -42,6 +85,11 @@ function Invoke-OneNotePublish {
         Write-Host $global:error -ForegroundColor Red
         Exit
     }
+}
+
+function Get-OneNotePublishFormats {
+    $publishformats = @('doc', 'docx', 'pdf', 'xml', 'one', 'onepkg', 'htm', 'mht', 'emf')
+    return $publishformats
 }
 
 function Invoke-OneNotePublishPageToWord {
@@ -184,6 +232,62 @@ function Get-OneNoteEnrichPageCollection {
         Exit
     }
 }
+
+
+function Get-OneNoteEnrichedPagePublishPaths {
+    <#
+        Helper for publish: enriched Page object with a certain path set
+        https://docs.microsoft.com/en-us/office/client-developer/onenote/enumerations-onenote-developer-reference#odc_PublishFormat
+    #>
+    param(
+        [object]$Page,
+        [string]$ExportFormat
+    )
+    try {
+        $ExportFormat = $ExportFormat.Trim()
+        $Extension = $ExportFormat      # for publish formats this is equal to exportformat for simpleness
+        $Dir = $ExportFormat            # for publish formats this is equal to exportformat for simpleness
+        if ($ExportFormat -eq "markdown") {
+            $Extension = "md"
+            $Dir = "markdown"
+        }
+        $path = (Join-Path -Path $Page.ExportRootPath -ChildPath $Dir | Join-Path -ChildPath $Page.RelativeRoot | Join-Path -ChildPath $Page.FullName) + "." + $Extension
+        $Page | Add-Member -Type NoteProperty -Name $ExportFormat -Value $path -Force
+        return $Page
+    }
+    catch {
+        Write-Host $global:error -ForegroundColor Red
+        $global:Error
+        Exit
+    }
+}
+
+function Get-OneNoteEnrichedPage {
+    <#
+        Helper: Enriches the Page object with path information
+    #>
+    param(
+        [Object]$Page,
+        [String]$Path,
+        [string]$ExportRootPath,
+        [string]$ExportFormat
+    )
+    try {
+        $Page | Add-Member -Type NoteProperty -Name 'ExportRootPath' -Value $ExportRootPath -Force # root indicated by user in config
+        $Page | Add-Member -Type NoteProperty -Name 'RelativeRoot' -Value $Path -Force # relative path up top page level
+
+        $ExportFormat -split ',' -replace '^\s+|\s+$' | ForEach-Object {
+            $Page = Get-OneNoteEnrichedPagePublishPaths -Page $Page -ExportFormat $_
+        }
+        return $Page
+    }
+    catch {
+        Write-Host $global:error -ForegroundColor Red
+        $global:Error
+        Exit
+    }
+}
+
 function Remove-InvalidFileChars {
     <#
         .SYNOPSIS

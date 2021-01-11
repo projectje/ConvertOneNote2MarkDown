@@ -37,7 +37,7 @@ function Remove-InvalidFileNameCharsInsertedFiles {
         return ($newName -replace $rePattern, "" -replace "\s", "-")
     }
     catch {
-        Write-Host $Error -ForegroundColor Red
+        Write-Host $global:error -ForegroundColor Red
         Exit
     }
 }
@@ -54,7 +54,7 @@ function New-Dir {
         New-Item -ItemType Directory -Force -Path $Path | Out-Null
     }
     catch {
-        Write-Host $Error -ForegroundColor Red
+        Write-Host $global:error -ForegroundColor Red
         Exit
     }
 }
@@ -70,7 +70,7 @@ function Remove-File {
         Remove-Item -path $File -Force -ErrorAction SilentlyContinue
     }
     catch {
-        Write-Host $Error -ForegroundColor Red
+        Write-Host $global:error -ForegroundColor Red
         Exit
     }
 }

@@ -132,9 +132,8 @@ function Export-OneNotePageCollection {
         $mediaPath = $NotebookFilePath
       }
 
-
-
       Invoke-ConvertDocxToMd -OutputFormat $converter -Inputfile $wordDocumentPath -OutputFile "$fullfilepathwithoutextension.md" -MediaPath $mediaPath
+
       ProcessPageFileObjects -PageId $page.ID -Page $_ -MediaPath $MediaPath -MdPath $mdDocumentPath
       AddYamlToPage -MdPath $mdDocumentPath -Page $_
       ClearSpacesInPage -MdPath $mdDocumentPath -ClearSpaces $true # todo replace with variable
