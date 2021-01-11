@@ -7,23 +7,23 @@ function Export-OneNoteSectionGroupCollection {
     #>
     param (
         [Object]$Config,
+        [String]$RelativePath,
         [System.Array]$SectionGroupCollection,
-        [String]$Path,
         [Int]$Level = 0
     )
     try {
         if ($SectionGroupCollection.Count -gt 0 -and $null -ne $SectionGroupcollection) {
-            Write-Host "Exporting New SectionGroup $Path" -ForegroundColor Green
+            Write-Host "Exporting New SectionGroup $RelativePath" -ForegroundColor Green
             $sectionGroupItemsWithSection = Get-OneNoteSectionGroupCollectionSectionCollection -SectionGroup $SectionGroupCollection
             Write-Host "Parsing Entries Section in SectionGroup" -ForegroundColor Green
             foreach ($sectionGroup in $sectionGroupItemsWithSection) {
-                Export-OneNoteSectionGroupSection -Config $Config -SectionGroup $sectionGroup -Path $Path -Level $Level -Typez "Section"
+                Export-OneNoteSectionGroupSection -Config $Config -SectionGroup $sectionGroup -Level $Level -Typez "Section" -RelativePath $RelativePath
             }
             # get all entries that contain an entry "sectiongroup"
             Write-Host "Parsing Entries SectionGroup in SectionGroup" -ForegroundColor Green
             $sectionGroupItemsWithSectionGroup = Get-OneNoteSectionGroupCollectionSectionGroupCollection -SectionGroup $sectionGroupCollection
             foreach ($sectionGroup in $sectionGroupItemsWithSectionGroup ) {
-                Export-OneNoteSectionGroupSection -Config $Config -SectionGroup $sectionGroup -Path $Path -Level $Level -Typez "SectionGroup"
+                Export-OneNoteSectionGroupSection -Config $Config -SectionGroup $sectionGroup -Level $Level -Typez "SectionGroup" -RelativePath $RelativePath
             }
         }
     }

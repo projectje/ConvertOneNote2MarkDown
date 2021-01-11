@@ -20,7 +20,7 @@ $config.ExportFormat -split ',' -replace '^\s+|\s+$' | ForEach-Object {
 }
 if ($pandocIsNeeded -eq $true -and [System.Convert]::ToBoolean($Config.AutoDownloadPandoc) -eq $true) {
     $pandocExec = Get-PandocExecutable
-    $config | Add-Member -Type NoteProperty -Name 'pandoc' -Value $pandocExec -Force
+    $config | Add-Member -Type NoteProperty -Name 'Pandoc' -Value $pandocExec -Force
 }
 
 Export-OneNoteHierarchy -Config $config
@@ -30,3 +30,4 @@ Export-OneNoteHierarchy -Config $config
 #  And it runs ok
 # TODO 2: auto unfold pages based on the property since they apparently are not exported
 # TODO 3: add a warning in the log if objects are encrypted
+# todo validate that docx is specified if MD is chosen

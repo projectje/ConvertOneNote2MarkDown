@@ -7,17 +7,17 @@ function Export-OneNoteSectionCollection {
     #>
     param(
         [Object]$Config,
+        [String]$RelativePath,
         [System.Array] $SectionCollection,
-        [String]$Path,
         [Int]$Level = 0
     )
     try {
         foreach ($section in $SectionCollection) {
             $sectionFileName = $section.Name | Remove-InvalidFileNameChars
-            $dir = Join-Path $Path -ChildPath $sectionFileName
-            Write-Host "Exporting Section $dir" -ForegroundColor Green
+            $NewRelativePath = Join-Path $RelativePath -ChildPath $sectionFileName
+            Write-Host "Exporting Section $NewRelativePath" -ForegroundColor Green
             $pageCollection = Get-OneNoteSectionPageCollection -Section $section
-            Export-OneNotePageCollection -PageCollection $pageCollection -Path $dir -Level $Level -Config $Config
+            Export-OneNotePageCollection -Config $Config -PageCollection $pageCollection -Level $Level -RelativePath $NewRelativePath
         }
     }
     catch {

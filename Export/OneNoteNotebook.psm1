@@ -12,13 +12,14 @@ function Export-OneNoteNoteBook {
     try {
         Write-Host "Exporting Sections and SectionGroups from Notebook $notebookFileName" -ForegroundColor Green
         $notebookFileName = $Notebook.Name | Remove-InvalidFileNameChars
+        $Config | Add-Member -Type NoteProperty -Name 'Notebook' -Value $notebookFileName -Force
         $sectionCollection = Get-OneNoteNotebookSectionCollection -Notebook $Notebook
         $sectionGroupCollection = Get-OneNoteNotebookSectionGroupCollection -Notebook $Notebook -Include_Recyclebin $false
         if ($null -ne $sectionCollection) {
-            Export-OneNoteSectionCollection -SectionCollection $sectionCollection -Path $notebookFileName -Config $Config
+            Export-OneNoteSectionCollection -Config $Config -SectionCollection $sectionCollection -RelativePath $notebookFileName
         }
         if ($null -ne $sectionGroupCollection) {
-            Export-OneNoteSectionGroupCollection -SectionGroupCollection $sectionGroupCollection -Path $notebookFileName -Config $Config
+            Export-OneNoteSectionGroupCollection -Config $Config -SectionGroupCollection $sectionGroupCollection -RelativePath $notebookFileName
         }
     }
     catch {

@@ -72,7 +72,7 @@ function Invoke-OneNotePublish {
             $fileExists = $false
         }
         if ($fileExists -eq $false) {
-            Write-Host "Publishing Page: " $Path -ForegroundColor Green
+            Write-Host "Publishing Page: " $ID $Path $PublishFormat -ForegroundColor Green
             $OneNotePage.Publish($ID, $Path, $PublishFormat, "")
         }
         else {
@@ -92,23 +92,6 @@ function Get-OneNotePublishFormats {
     return $publishformats
 }
 
-function Invoke-OneNotePublishPageToWord {
-    <#
-        Short form specific for Page to Word
-    #>
-    param (
-        [string]$PageId,
-        [string]$Path,
-        [bool]$Overwrite = $true
-    )
-    try {
-        Invoke-OneNotePublish -ID $PageId -Path $Path -PublishFormat 'pfWord' -Overwrite $Overwrite
-    }
-    catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
-    }
-}
 
 function Get-OneNotePageHasChildren {
     <#
@@ -229,61 +212,6 @@ function Get-OneNoteEnrichPageCollection {
     catch {
         Write-Host "ERROR:" -ForegroundColor Red
         $global:error
-        Exit
-    }
-}
-
-
-function Get-OneNoteEnrichedPagePublishPaths {
-    <#
-        Helper for publish: enriched Page object with a certain path set
-        https://docs.microsoft.com/en-us/office/client-developer/onenote/enumerations-onenote-developer-reference#odc_PublishFormat
-    #>
-    param(
-        [object]$Page,
-        [string]$ExportFormat
-    )
-    try {
-        $ExportFormat = $ExportFormat.Trim()
-        $Extension = $ExportFormat      # for publish formats this is equal to exportformat for simpleness
-        $Dir = $ExportFormat            # for publish formats this is equal to exportformat for simpleness
-        if ($ExportFormat -eq "markdown") {
-            $Extension = "md"
-            $Dir = "markdown"
-        }
-        $path = (Join-Path -Path $Page.ExportRootPath -ChildPath $Dir | Join-Path -ChildPath $Page.RelativeRoot | Join-Path -ChildPath $Page.FullName) + "." + $Extension
-        $Page | Add-Member -Type NoteProperty -Name $ExportFormat -Value $path -Force
-        return $Page
-    }
-    catch {
-        Write-Host $global:error -ForegroundColor Red
-        $global:Error
-        Exit
-    }
-}
-
-function Get-OneNoteEnrichedPage {
-    <#
-        Helper: Enriches the Page object with path information
-    #>
-    param(
-        [Object]$Page,
-        [String]$Path,
-        [string]$ExportRootPath,
-        [string]$ExportFormat
-    )
-    try {
-        $Page | Add-Member -Type NoteProperty -Name 'ExportRootPath' -Value $ExportRootPath -Force # root indicated by user in config
-        $Page | Add-Member -Type NoteProperty -Name 'RelativeRoot' -Value $Path -Force # relative path up top page level
-
-        $ExportFormat -split ',' -replace '^\s+|\s+$' | ForEach-Object {
-            $Page = Get-OneNoteEnrichedPagePublishPaths -Page $Page -ExportFormat $_
-        }
-        return $Page
-    }
-    catch {
-        Write-Host $global:error -ForegroundColor Red
-        $global:Error
         Exit
     }
 }
