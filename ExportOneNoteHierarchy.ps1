@@ -25,6 +25,8 @@ if ($pandocIsNeeded -eq $true -and [System.Convert]::ToBoolean($Config.AutoDownl
 
 Export-OneNoteHierarchy -Config $config
 
+# TODO: handle attachments differently than media
+
 # TODO 1: https://github.com/PowerShell/vscode-powershell/issues/1856
 #  After some time idle scope error appear, then need to run $error.Clear()
 #  And it runs ok

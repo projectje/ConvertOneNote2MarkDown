@@ -38,7 +38,7 @@ function Get-OneNoteHierarchy {
         [xml]$ObjectId = $null
         $OneNote = New-Object -ComObject OneNote.Application
         $OneNote.GetHierarchy("", [Microsoft.Office.InterOp.OneNote.HierarchyScope]::hsPages, [ref]$ObjectId)
-        [System.Runtime.Interopservices.Marshal]::ReleaseComObject($OneNote)
+        [System.Runtime.Interopservices.Marshal]::ReleaseComObject($OneNote) | Out-Null
         Remove-Variable OneNote
         return $ObjectId
     }

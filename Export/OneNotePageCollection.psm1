@@ -27,7 +27,9 @@ function Export-OneNotePageCollection {
             $Config.ExportFormat -split ',' -replace '^\s+|\s+$' | ForEach-Object {
                 if ($publishformats -contains $_) {
                     $documentOutputPath = $publishPage | Select-Object -ExpandProperty $_
-                    Invoke-OneNotePublish -ID ($publishPage.Id) -Path $documentOutputPath -PublishFormat $_ -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+                    Invoke-OneNotePublish -ID $publishPage.Id -Path $documentOutputPath -PublishFormat $_ -Overwrite ([System.Convert]::ToBoolean($Config.Overwrite))
+                    $attachmentsPath = $publishPage | Select-Object -ExpandProperty "$($_)AttachmentsPath"
+                    $result = Get-OneNotePageInsertedFileObjects -ID $publishPage.Id -AttachmentsPath $attachmentsPath
                 }
             }
 
@@ -36,12 +38,25 @@ function Export-OneNotePageCollection {
                 if ($pandocMdFormats -contains $_) {
                     $documentInputPath = $publishPage | Select-Object -ExpandProperty 'docx'
                     $documentOutputPath = $publishPage | Select-Object -ExpandProperty $_
+                    New-Dir -Path  ([IO.Path]::GetDirectoryName($documentOutputPath)) | Out-Null
                     Invoke-ConvertDocxToMd -PandocExec $Config.Pandoc -OutputFormat $_ -Inputfile $documentInputPath -OutputFile $documentOutputPath -MediaPath $publishPage.MediaPath
+                    # filters:
+                    if ([bool]($Config.PSobject.Properties.name -match "MdClearSpaces")) {
+                        Invoke-MdClearSpaces -MdPath $documentOutputPath
+                    }
+                    if ([bool]($Config.PSobject.Properties.name -match "MdClearEspace")) {
+                        Invoke-MdClearEscape -MdPath $documentOutputPath
+                    }
+                    if ([bool]($Config.PSobject.Properties.name -match "MdAddYaml")) {
+                        Invoke-MdAddYaml -MdPath $documentOutputPath -PageName $publishPage.Name -PageDateTime $page.DateTime
+                    }
+                    Invoke-MdRenameImages -MdPath $documentOutputPath -MediaPath $publishPage.MediaPath -PageName $publishPage.Name
+                    Invoke-MdImagePathReference -MdPath $documentOutputPath -MediaPath $publishPage.MediaPath -LevelsPrefix $Level
                 }
             }
         }
 
-        # New-Dir -Path  ([IO.Path]::GetDirectoryName($path)) | Out-Null # not needed
+
     }
     catch {
         Write-Host $global:error -ForegroundColor Red
@@ -81,6 +96,10 @@ function Get-EnrichedPagePublishPaths {
                 $Page | Add-Member -Type NoteProperty -Name 'MediaPath' -Value $mediaPath -Force
             }
         }
+
+        $attachmentsPath = (Join-Path -Path ($Config.ExportRootPath) -ChildPath $ExportFormat | Join-Path -ChildPath $RelativePath | Join-Path -ChildPath $Page.FullName) | Join-Path -ChildPath "Attachments"
+        $Page | Add-Member -Type NoteProperty -Name "$($ExportFormat)AttachmentsPath" -Value $attachmentsPath -Force
+
         $path = (Join-Path -Path ($Config.ExportRootPath) -ChildPath $ExportFormat | Join-Path -ChildPath $RelativePath | Join-Path -ChildPath ($Page.FullName)) + "." + $Extension
         $Page | Add-Member -Type NoteProperty -Name $ExportFormat -Value $path -Force
         return $Page
