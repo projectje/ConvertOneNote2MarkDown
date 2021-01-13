@@ -12,6 +12,3 @@ Export-OneNoteHierarchy -Config (Export-Config -Path "$PSScriptRoot\Export\Confi
 
 # TODO: auto unfold pages based on the property since they apparently are not exported
 # TODO: add a warning in the log if objects are encrypted
-# todo validate that docx is specified if MD is chosen
-#$global:error
-$Error.Clear()

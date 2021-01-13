@@ -82,9 +82,19 @@ function Export-Config {
             $config | Add-Member -Type NoteProperty -Name 'pandocMdFormats' -Value (Get-PandocMDOutputFormats) -Force
 
             if ($config.AutoDownloadPandoc -eq $true) {
-                $config.ExportFormat | ForEach-Object {
-                    if (-not ($config.PublishGormats -contains $_)) {
+                foreach($exportFormat in $config.ExportFormat) {
+                    if (-not ($config.PublishFormats -contains $exportFormat)) {
                         $config | Add-Member -Type NoteProperty -Name 'Pandoc' -Value (Get-PandocExecutable) -Force
+                    }
+                }
+            }
+
+            foreach($exportFormat in $config.ExportFormat) {
+                if ($config.PandocMdFormats -contains $exportFormat) {
+                    # make sure docx is also selected
+                    if (-not ($config.ExportFormat -contains "docx")) {
+                        $config.ExportFormat += "docx"
+                        $config | Add-Member -Force -Type NoteProperty -Name ExportFormat -Value $config.ExportFormat
                     }
                 }
             }
