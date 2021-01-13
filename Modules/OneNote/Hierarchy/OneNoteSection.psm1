@@ -14,8 +14,7 @@ function Get-OneNoteSectionPageCollection {
         return $Section.Page
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -30,7 +29,6 @@ function Get-OneNoteSectionPageCount {
         return $Section.Page.Count
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

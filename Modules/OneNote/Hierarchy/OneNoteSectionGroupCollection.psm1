@@ -16,8 +16,7 @@ function Get-OneNoteSectionGroupCollectionSectionGroupCollection {
         return $SectionGroupCollection | Where-Object {$null -ne $_.SectionGroup}
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -34,7 +33,6 @@ function Get-OneNoteSectionGroupCollectionSectionCollection {
     }
     catch
     {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

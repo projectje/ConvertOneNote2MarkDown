@@ -19,8 +19,7 @@ function Get-OneNoteSectionGroupSectionCollection {
         return $section.Section
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -38,7 +37,6 @@ function Get-OneNoteSectionGroupSectionGroupCollection {
         return $sectionGroup.Sectiongroup
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

@@ -17,7 +17,6 @@ function Get-OneNotePageName {
         return $Page.name | Remove-InvalidFileNameChars
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

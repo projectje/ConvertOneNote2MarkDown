@@ -16,8 +16,7 @@ function Get-OneNoteNotebookCollection {
         return $Hierarchy.Notebooks
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -29,7 +28,6 @@ function Get-OneNoteNotebookCollectionCount {
         return $NotebookCollection.Notebook.Count
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

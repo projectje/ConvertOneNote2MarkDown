@@ -14,8 +14,7 @@ function Get-OneNotePageCollectionCount {
         return $PageCollection.Count
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -31,7 +30,6 @@ function Get-OneNotePageFromPageCollection {
         return $PageCollection | Where-Object { $_.ID -eq $ID}
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

@@ -17,8 +17,7 @@ function Get-OneNoteNotebook {
         return $NotebookCollection.Notebook[$NotebookItem]
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -34,8 +33,7 @@ function Get-OneNoteNotebookSectionCollection {
         return $Notebook.Section
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -57,7 +55,6 @@ function Get-OneNoteNotebookSectionGroupCollection {
     }
     catch
     {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

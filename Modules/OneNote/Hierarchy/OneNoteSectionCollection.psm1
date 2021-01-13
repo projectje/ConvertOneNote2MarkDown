@@ -11,7 +11,6 @@ function Get-OneNoteSectionCollectionSection {
         return $SectionCollection | Where-Object { $_.ID -eq $ID }
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

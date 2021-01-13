@@ -17,8 +17,7 @@ Function Get-Config {
         # The filename of the configuration file, you can keep multiple config file e.g. local / dev / prod
         # and easily switch by calling a different configuration
         [Parameter(Mandatory = $True, ValueFromPipeline = $True, ValueFromPipelinebyPropertyName = $True)]
-        [string]
-        $path
+        [string] $path
     )
 
     Begin {

@@ -14,8 +14,14 @@ function Remove-InvalidFileNameChars {
             ValueFromPipelineByPropertyName = $true)]
         [string]$Name
     )
-    $newName = $Name.Split([IO.Path]::GetInvalidFileNameChars()) -join '-'
-    return (((($newName -replace "\s", "-") -replace "\[", "(") -replace "\]", ")").Substring(0, $(@{$true = 130; $false = $newName.length}[$newName.length -gt 150])))
+    try {
+        $newName = $Name.Split([IO.Path]::GetInvalidFileNameChars()) -join '-'
+        return (((($newName -replace "\s", "-") -replace "\[", "(") -replace "\]", ")").Substring(0, $(@{$true = 130; $false = $newName.length}[$newName.length -gt 150])))
+    }
+    catch
+    {
+        throw
+    }
 }
 
 function New-Dir {
@@ -30,8 +36,7 @@ function New-Dir {
         New-Item -ItemType Directory -Force -Path $Path | Out-Null
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        throw
     }
 }
 
@@ -46,7 +51,6 @@ function Remove-File {
         Remove-Item -path $File -Force -ErrorAction SilentlyContinue
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        throw
     }
 }

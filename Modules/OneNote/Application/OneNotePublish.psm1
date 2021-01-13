@@ -18,7 +18,7 @@ function Invoke-OneNotePublish {
                     [in,defaultvalue(0)]BSTR bstrCLSIDofExporter);
     #>
     param (
-        [string] $ID, # [in]BSTR bstrHierarchyID
+        [string] $Id, # [in]BSTR bstrHierarchyID
         [string] $Path, # [in]BSTR bstrTargetFilePath
         [string] $PublishFormat = 'pfWord', # [in,defaultvalue(pfOneNote)]PublishFormat pfPublishFormat,
         [bool] $Overwrite = $true
@@ -73,7 +73,9 @@ function Invoke-OneNotePublish {
         }
         if ($fileExists -eq $false) {
             Write-Host "Publishing Page: " $Path -ForegroundColor Green
-            $OneNotePage.Publish($ID, $Path, $PublishFormat, "")
+            $dirPath = [IO.Path]::GetDirectoryName($Path)
+            New-Item -Path $dirPath -ItemType "directory" -Force | Out-Null
+            $OneNotePage.Publish($Id, $Path, $PublishFormat, "")
         }
         else {
             Write-Host "Skipping Page: " $Path -ForegroundColor Yellow
@@ -82,8 +84,7 @@ function Invoke-OneNotePublish {
         Remove-Variable OneNotePage
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -115,8 +116,7 @@ function Get-OneNotePageHasChildren {
         return $false;
     }
     catch {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }
 
@@ -210,9 +210,7 @@ function Get-OneNoteEnrichPageCollection {
         return $pageArray
     }
     catch {
-        Write-Host "ERROR:" -ForegroundColor Red
-        $global:error
-        Exit
+        Throw
     }
 }
 
@@ -228,6 +226,12 @@ function Remove-InvalidFileChars {
             ValueFromPipelineByPropertyName = $true)]
         [string]$Name
     )
-    $newName = $Name.Split([IO.Path]::GetInvalidFileNameChars()) -join '-'
-    return (((($newName -replace "\s", "-") -replace "\[", "(") -replace "\]", ")").Substring(0, $(@{$true = 130; $false = $newName.length}[$newName.length -gt 150])))
+    try {
+        $newName = $Name.Split([IO.Path]::GetInvalidFileNameChars()) -join '-'
+        return (((($newName -replace "\s", "-") -replace "\[", "(") -replace "\]", ")").Substring(0, $(@{$true = 130; $false = $newName.length}[$newName.length -gt 150])))
+    }
+    catch
+    {
+        throw
+    }
 }

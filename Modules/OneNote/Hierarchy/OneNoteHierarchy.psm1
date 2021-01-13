@@ -44,7 +44,6 @@ function Get-OneNoteHierarchy {
     }
     catch
     {
-        Write-Host $global:error -ForegroundColor Red
-        Exit
+        Throw
     }
 }

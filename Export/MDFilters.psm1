@@ -53,8 +53,7 @@ function Invoke-MdClearSpaces {
     Clear double spaces from bullets and nonbreaking spaces from blank lines
     #>
     Param (
-        [string]$MdPath,
-        [bool]$ClearSpaces
+        [string]$MdPath
     )
     try {
         ((Get-Content -Path $MdPath -Raw -encoding utf8).Replace(">", "").Replace("<", "").Replace([char]0x00A0, [char]0x000A).Replace([char]0x000A, [char]0x000A).Replace("`r`n`r`n", "`r`n")) | Set-Content -Path  $MdPath
