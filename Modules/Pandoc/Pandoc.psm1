@@ -1,4 +1,4 @@
-function Get-PandocExecutable {
+﻿function Get-PandocExecutable {
     <#
         Fetches the specified version of Pandoc into temp location and returns location of exec path
         ref: https://jonlabelle.com/snippets/view/powershell/transform-markdown-files-with-pandoc-and-powershell
@@ -48,6 +48,10 @@ function Invoke-ConvertDocxToMd {
         [string] $OutputFile,                       # -o
         [string] $MediaPath                         # --extra-media
     )
+
+    #
+    # todo: not all formats support all extensions e.g. gfm does not support simple table, so should be part of configuration file > handier
+    #
 
     $pandocArgs = @(
         $InputFile,

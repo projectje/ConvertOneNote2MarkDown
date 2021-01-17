@@ -1,3 +1,7 @@
+<#
+    .SYNOPSIS
+        Validates and enriches the export.cfg configuration file > PSCustomObject
+#>
 function Export-OneNoteConfigCheckKeyValue {
     <#
         .SYNOPSIS
@@ -56,7 +60,7 @@ function Export-OneNoteConfigCheckKeyValue {
     }
 }
 
-function Export-Config {
+function Get-OneNotePublishConfiguration {
     <#
         .SYNOPSIS
             Handle Configuration for Export
@@ -66,20 +70,26 @@ function Export-Config {
     )
     try {
         $config = Get-Config -path $Path
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key ExportRootPath -Type "Path" -Required $true
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key AutoDownloadPandoc -Type "Bool"  -Required $false -DefaultValue "True"
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key ExportFormat -Type "Array"  -Required $true
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key Overwrite -Type "Bool"  -Required $false  -DefaultValue "False"
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key OverwriteAttachments -Type "Bool" -Required $false -DefaultValue "False"
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key MdCentralMediaPath -Type "Bool" -Required $false -DefaultValue "False"
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key MdClearSpaces -Type "Bool" -Required $false -DefaultValue "False"
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key MdClearEscape -Type "Bool" -Required $false -DefaultValue "False"
-        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key MdAddYaml -Type "Bool" -Required $false -DefaultValue "False"
+        $config = Export-OneNoteConfigCheckKeyValue -Config $config -Key ExportRootPath -Type "Path" -Required $true |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key AutoDownloadPandoc -Type "Bool"  -Required $false -DefaultValue "True" |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key ExportFormat -Type "Array"  -Required $true |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key Overwrite -Type "Bool"  -Required $false  -DefaultValue "False" |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key OverwriteAttachments -Type "Bool" -Required $false -DefaultValue "False" |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key MdCentralMediaPath -Type "Bool" -Required $false -DefaultValue "False" |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key MdClearSpaces -Type "Bool" -Required $false -DefaultValue "False" |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key MdClearEscape -Type "Bool" -Required $false -DefaultValue "False" |
+        Export-OneNoteConfigCheckKeyValue -Config $config -Key MdAddYaml -Type "Bool" -Required $false -DefaultValue "False"
 
         if ($null -ne $config)
         {
-            $config | Add-Member -Type NoteProperty -Name 'PublishFormats' -Value (Get-OneNotePublishFormats) -Force
-            $config | Add-Member -Type NoteProperty -Name 'pandocMdFormats' -Value (Get-PandocMDOutputFormats) -Force
+            $TagPath = Join-Path -Path $config.ExportRootPath -ChildPath "_tags"
+            New-Dir -Path $TagPath
+            # delete the tag items on each run since otherwise they will be appended to
+            (Get-ChildItem -Path $config.ExportRootPath -Recurse -Filter '*.tag.html').Fullname | Remove-Item
+
+            $config | Add-Member -Type NoteProperty -Name PublishFormats -Value (Get-OneNotePublishFormats) -Force -PassThru |
+                      Add-Member -Type NoteProperty -Name pandocMdFormats -Value (Get-PandocMDOutputFormats) -Force -PassThru |
+                      Add-Member -Type NoteProperty -Name TagPath -Value $TagPath -Force
 
             if ($config.AutoDownloadPandoc -eq $true) {
                 foreach($exportFormat in $config.ExportFormat) {

@@ -1,4 +1,4 @@
-<#
+﻿<#
     .SYNOPSIS
         filters applied after writing an MD file
         see: https://github.com/nixsee/ConvertOneNote2MarkDown/blob/master/ConvertOneNote2MarkDown-v2.ps1

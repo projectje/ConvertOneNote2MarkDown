@@ -24,7 +24,20 @@ Write-Host "Section {$testId}:" -BackgroundColor Green -ForegroundColor Black
 $section = Get-OneNoteSectionCollectionSection -SectionCollection $sectionCollection -ID $testId
 Write-Host "Get Pages for Section {$testId}:" -BackgroundColor Green -ForegroundColor Black
 $pageCollection = Get-OneNoteSectionPageCollection -Section $section
-$pageCollection
+#$pageCollection
+
+$pageCollection | ForEach-Object {
+    $page = $_
+    $page | Get-Member -MemberType Property | ForEach-Object {
+        $handledProperties = 'ID', 'lastModifiedTime', 'dateTime', 'pageLevel', 'name'
+        if (-not ($handledProperties -contains $_.Name)) {
+            write-host " not handled: "
+            $_.Name
+        }
+    }
+}
+
 ######################################################################################
-$count = Get-OneNotePageCollectionCount -PageCollection $pageCollection
-$count
+
+#$count = Get-OneNotePageCollectionCount -PageCollection $pageCollection
+#$count

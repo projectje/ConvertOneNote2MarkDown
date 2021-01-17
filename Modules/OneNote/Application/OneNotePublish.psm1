@@ -1,4 +1,4 @@
-<#
+﻿<#
     .SYNOPSIS
         Operations concerning OneNote.Application.Publish which is also worded as "export"
 #>
@@ -59,8 +59,8 @@ function Invoke-OneNotePublish {
     elseif ($PublishFormat -eq 'htm') {
         $PublishFormat = 'pfHTML'
     }
-    elseif ($PublishFormat -eq 'html') {
-        $PublishFormat = 'pfHTML'
+    else {
+        return
     }
 
     try {
@@ -84,6 +84,7 @@ function Invoke-OneNotePublish {
         Remove-Variable OneNotePage
     }
     catch {
+        write-host $Id $Path $PublishFormat
         Throw
     }
 }
@@ -126,13 +127,14 @@ function Get-OneNoteEnrichPageCollection {
         to make a hierarchy of nested pages
 
         On the way the page structure itself (3 level) should be structured are different opinions, so
-        probably will be a paramter
+        probably will be a parameter
 
         Also the possibility exists to auto unfold page structures (otherwise they will not be exported)
 
     #>
     param(
-        [System.Array]$PageCollection
+        [System.Array]$PageCollection,
+        [String]$RelativePath
     )
     $count = $PageCollection.Count
     $Dir = "empty"
@@ -143,55 +145,43 @@ function Get-OneNoteEnrichPageCollection {
         for ($i = 0; $i -lt $count; $i++) {
             $page = $PageCollection[$i]
 
-            # 1 copy over basic properties
-            $pageObject = New-Object -TypeName PSObject
-            Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "Id" -Value ($page.ID) -Force
-            Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "Name" -Value (Remove-InvalidFileChars -Name $page.name) -Force
-            Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "DateTime" -Value ($page.dateTime) -Force
-            Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "LastModifiedTime" -Value ($page.lastModifiedTime) -Force
-            Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "PageLevel" -Value ($page.pageLevel) -Force
+            # 1. determine if has children (needed by 2)
+            $hasChildren      = Get-OneNotePageHasChildren -PageCollection $pageCollection -ID $page.ID;
 
-            # 2 Add property to indicate if a page has children
-            $hasChildren = Get-OneNotePageHasChildren -PageCollection $pageCollection -ID ($pageObject.Id)
-            if ($hasChildren) {
-                Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "HasChildren" -Value $true -Force
-            }
-            else {
-                Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "HasChildren" -Value $false -Force
-            }
-
-            # 3 Add path to indicate the path
+            # 2. determine pagePath
             $path = ""
-            if ($pageObject.PageLevel -eq 3) {
+            $name = Remove-InvalidFileChars -Name $page.name
+            if ($page.pageLevel -eq 3)
+            {
                 $path = Join-Path -Path $Dir -ChildPath $SubDir
             }
-            elseif ($pageObject.PageLevel -eq 2) {
-                if ($pageObject.HasChildren) {
-                    $SubDir = $pageObject.Name
+            elseif ($page.pageLevel -eq 2)
+            {
+                if ($hasChildren) {
+                    $SubDir = $name
                     $path = Join-Path -Path $Dir -ChildPath $SubDir
                 }
                 else {
                     $path = $Dir
                 }
             }
-            elseif ($pageObject.PageLevel -eq 1) {
-                if ($pageObject.HasChildren) {
-                    $Dir = $pageObject.Name
+            elseif ($page.pageLevel -eq 1) {
+                if ($hasChildren) {
+                    $Dir = $name
                     $path = $Dir
                 }
                 else {
                     $path = ""
                 }
             }
-            Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "Path" -Value $path -Force
 
-            # If the collection contains duplicate names, add and extension to one name
+            # 3. If the collection contains duplicate names, add and extension to one name
             $fullName = ""
-            if ($null -ne $pageObject.Path -and "" -ne $pageObject.Path) {
-                $fullName = Join-Path -Path ($pageObject.Path) -ChildPath ($pageObject.Name)
+            if ($null -ne $path -and "" -ne $path) {
+                $fullName = Join-Path -Path $path -ChildPath $name
             }
             else {
-                $fullName = $pageObject.Name
+                $fullName = $name
             }
             if ($namesArray.Contains($fullName)) {
                 $postfix = 0
@@ -202,9 +192,38 @@ function Get-OneNoteEnrichPageCollection {
                 $fullName = $testName
             }
             $namesArray.Add($fullName) | Out-Null
-            Add-Member -InputObject $pageObject -MemberType NoteProperty -Name "FullName" -Value $fullName -Force
 
-            # replace the enriched page
+            # Report properties we are not handling
+            $page | Get-Member -MemberType Property | ForEach-Object {
+                $handledProperties = 'ID', 'lastModifiedTime', 'dateTime', 'pageLevel', 'name', 'isUnread', 'Meta', 'stationeryName', 'isCurrentlyViewed', 'isCollapsed'
+                if (-not ($handledProperties -contains $_.Name)) {
+                    write-host "Warning, Property not yet handled: " $_.Name
+                }
+            }
+
+            $pageObject = [PSCustomObject] @{
+                Id               = $page.Id
+                Name             = $name
+                DateTime         = $page.dateTime
+                LastModifiedTime = $page.lastModifiedTime
+                IsUnread         = $page.isUnread # not used in script
+                IsCurrentlyViewed = $page.IsCurrentlyViewed # not used in script
+                StationeryName    = $page.stationeryName # not used in script
+                Meta              = $page.Meta # not used in script
+                IsCollapsed = $page.isCollapsed # not used in script
+                PageLevel        = $page.pageLevel
+                HasChildren      = $hasChildren
+                RelativePath     = $RelativePath
+                Path             = $path
+                FullName = $fullName
+            }
+
+            # I read collapsed pages would not be exported but i dont see this happening with my collapsed pages so commented
+            # Otherwise the TreeCollapsedStateType would needed to be called with tcsExpanded
+            if ($null -ne $pageObject.IsCollapsed ) {
+                #write-host "Warning the page " $pageObject.Name " is collapsed  " -ForegroundColor red
+            }
+
             $pageArray.Add($pageObject) | Out-Null
         }
         return $pageArray

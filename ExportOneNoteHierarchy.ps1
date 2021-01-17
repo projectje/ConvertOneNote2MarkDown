@@ -1,4 +1,4 @@
-<#
+﻿<#
     .SYNOPSIS
     Exports a OneNoteHierachy
 
@@ -7,8 +7,8 @@
     - edit the config.cfg file with preferences
 #>
 (Get-ChildItem -Path "$PSScriptRoot\Modules" -Recurse -Filter '*.psm1' -Verbose).FullName | ForEach-Object { Import-Module $_ -Force }
-(Get-ChildItem -Path "$PSScriptRoot\Export" -Recurse -Filter '*.psm1' -Verbose).FullName | ForEach-Object { Import-Module $_ -Force }
-Export-OneNoteHierarchy -Config (Export-Config -Path "$PSScriptRoot\Export\Config\export.cfg")
+(Get-ChildItem -Path "$PSScriptRoot\ScriptModules" -Recurse -Filter '*.psm1' -Verbose).FullName | ForEach-Object { Import-Module $_ -Force }
+(Get-ChildItem -Path "$PSScriptRoot\Config" -Recurse -Filter '*.psm1' -Verbose).FullName | ForEach-Object { Import-Module $_ -Force }
 
-# TODO: auto unfold pages based on the property since they apparently are not exported
-# TODO: add a warning in the log if objects are encrypted
+$config = Get-OneNotePublishConfiguration -Path "$PSScriptRoot\Config\publish.cfg"
+Publish-OneNoteHierarchyPages -Config $config

@@ -1,6 +1,7 @@
 # OneNote Publish/Exporter
 
-This PowerShell script will export a full hierarchy of all OneNote Notebooks to several supported formats on page level.
+This PowerShell script will export a full hierarchy of all OneNote Notebooks to several supported formats, it will also export all tags such as unresolved todos,
+it will also export all attachments.
 
 ## Instructions
 
@@ -35,11 +36,12 @@ The script will autodownload Pandoc for conversion when needed unless stated in 
 ## Notes
 
 - the script will not export encrypted objects. TODO is to report this in a warning file
-- the script will not unfold folded pages, this is TODO
 - more Pandoc conversion options TODO
-- more MD specific after conversions TODO I did not implement all in the other forks yet
+- more MD specific after conversions TODO (did not implement all stuff in the other forks yet)
 - Publish on section or notebook level TODO
 - Log file instead of Global Error TODO
+- Im doubting docx is a good base for md since its does not export the checkboxes while html does
+- More metadata would be available for export in md
 
 ## Forked
 
