@@ -5,7 +5,7 @@ it will also export all attachments.
 
 ## Instructions
 
-Edit Export/Config/export.cfg:
+Specify your settings in the file: /Config/publish.cfg:
 
 - Specify one or more export formats desired:
 
@@ -28,10 +28,9 @@ Edit Export/Config/export.cfg:
 
 - Specify the folder you would like to export to
 - Specify if you want to overwrite the OneNote Published file or not if existing
+- Specify if you want to overwrite attachments published or not if existing
 
-Run the script "ExportOneNoteHierarchy.ps1"
-
-The script will autodownload Pandoc for conversion when needed unless stated in the config file this is not desired.
+Then simply run the script "ExportOneNoteHierarchy.ps1"
 
 ## Notes
 
