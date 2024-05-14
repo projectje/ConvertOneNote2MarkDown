@@ -11,17 +11,18 @@ function Get-OneNoteTags {
     $xml = Get-OneNotePageXML -Id $EnrichedPageObject.Id
 
     # check if there are any tags on the page
-    $tagNames = @()
-    if ($xml.TagDef.Length -gt 0) {
-        $countTags = $xml.TagDef.count
-        for ($i = 0; $i -lt $countTags; $i++) {
+    if ($null -ne $xml.TagDef) {                # This means that there are (at least 1) TagDef
+        $xmlTagArray = [array]$xml.TagDef       # Here we cast all to array so that the count works
+        $tagNames = @()
+        $countTags = $xmlTagArray.count
+        for ($i=0; $i -lt $countTags; $i++) {
             $tag = [PSCustomObject]@{
-                index          = $xml.TagDef[$i].index
-                type           = $xml.TagDef[$i].type
-                symbol         = $xml.TagDef[$i].symbol
-                fontColor      = $xml.TagDef[$i].fontcolor
-                highlightColor = $xml.TagDef[$i].highlightcolor
-                name           = $xml.TagDef[$i].name
+                index          = $xmlTagArray[$i].index
+                type           = $xmlTagArray[$i].type
+                symbol         = $xmlTagArray[$i].symbol
+                fontColor      = $xmlTagArray[$i].fontcolor
+                highlightColor = $xmlTagArray[$i].highlightcolor
+                name           = $xmlTagArray[$i].name
             }
             $tagNames += $tag
         }
